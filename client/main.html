@@ -1,0 +1,162 @@
+<head>
+
+    <title>PDFTron Regression Tool</title>
+
+</head>
+
+<body>
+
+   
+
+</body>
+
+<template name="layout">
+  {{> navigation}}
+  {{> yield "body"}}
+</template>
+
+<template name="navigation">
+ <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">PDFTron</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+</template>
+
+<template name="useless">
+  <p> Hello World!</p>
+</template>
+
+<template name="maincontent">
+<!-- Page Content -->
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <h1 class="page-header">Documents Gallery</h1>
+            </div>
+
+            {{> documents}}
+        </div>
+
+        <hr>
+
+        <!-- Footer -->
+        <footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p>Copyright &copy; Your Website 2014</p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+    <!-- /.container -->
+</template>
+
+<template name="documents">
+<div class="row">
+    {{#each documents}}
+    {{> document}}
+    {{/each}}
+    </div>
+</template>
+
+<template name="document">
+  <div class="col-lg-3 col-md-4 col-xs-6 thumb">
+    <div class = "caption">
+      <h3>Document name</h3><!--{{document_name}}</h3>-->
+      </div>
+    {{#if id}}
+    <a class="thumbnail" href="#">
+      <img class="img-responsive" src='/thumb?id={{id}}' alt="">
+    </a>
+    {{else}}
+    <a class="thumbnail" href="#">
+      <img class="img-responsive" src="images/missing.png" alt="">
+    </a>
+    {{/if}}
+  </div>
+
+  <!--{{> references}}-->
+</template>
+
+<template name="references">
+  {{#each arrayify references}}
+  <h2> {{key}} </h2>
+  {{> reference obj}}
+  {{/each}}
+</template>
+
+<template name="reference">
+  <p>Hash: {{hash}}</p>
+  <p>Version: {{version}}</p>
+  <p>Type: {{type}}</p>
+
+  <p> ------PAGEs----- </p>
+  {{> pages}}
+
+  <p> ------Diffs-------</p>
+  {{> diffs}}
+</template>
+
+<template name="pages"> 
+  {{#each arrayify pages}}
+  <h3> Page number: {{key}} </h3>
+  {{> page obj}}
+  {{/each}}
+</template>
+
+<template name="page">
+  <p> Page number: {{page_num}}</p>
+  <p> Path: {{path}} </p>
+</template>
+
+<template name="diffs">
+{{#each arrayify diffs}}
+<h3> Version: {{key}} </h3>
+{{> diff obj}}
+{{/each}}
+</template>
+
+<template name="diff">
+  <p>Hash: {{hash}}</p>
+  <p>Version: {{version}}</p>
+  <p>Num page diffs: {{num_page_diffs}}</p>
+  <p>----------PAGEs-----------</p>
+  {{> pages}}
+
+  <p>----------Metrics----------</p>
+  {{> metrics}}
+</template>
+
+<template name="metrics">
+  {{#each arrayify metrics}}
+  <h3> Page number: {{key}} </h3>
+  {{> metric obj}}
+  {{/each}}
+</template>
+
+<template name="metric">
+  <p> Ref version: {{ref_version}}</p>
+  <p> Tar version: {{tar_version}}</p>
+  <p> Diff %: {{diff_percentage}}</p>
+</template>
