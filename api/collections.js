@@ -38,7 +38,8 @@ Collections['documents'].helpers({
 				this.thumb_version = key;
 
 				if (1 in ref.pages){
-					this.id= ref.pages[1]._id;
+					this.thumb_page_version = ref.pages[1].version;
+					this.thumb_page_hash = ref.pages[1].hash;
 				}
 				return this;
 			}

@@ -8,9 +8,49 @@ body {
     padding-top: 70px; /* Required padding for .navbar-fixed-top. Change if height of navigation changes. */
 }
 
-.thumb {
-    margin-bottom: 30px;
-    max-width: 300px;
+.thumbnail-head {
+	vertical-align: top;
+}
+
+.doc-caption {
+	word-wrap: break-word;
+	text-align: center;
+	height: 50px;
+	font-weight: bold;
+}
+
+.thumbnail {
+	border: none;
+	margin-bottom: 50px;
+}
+
+.thumbnail > a {
+    display: block;
+    height: 300px;
+    /* for center alignment */
+    position: relative;
+}
+
+.thumbnail > a > img {
+    max-width: 100%;
+    max-height: 100%;
+    /* for center alignment */
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin-top: auto;
+    margin-bottom: auto;
+
+	  border: 2px solid #333;
+ 		-moz-transition: all 0.2s ease-in-out;
+ 		-webkit-transition: all 0.2s ease-in-out;
+ 		transition: all 0.2s ease-in-out;
+}
+
+.img-responsive:hover{
+	border: 2px solid #F15123;
 }
 
 footer {
