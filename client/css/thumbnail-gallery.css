@@ -4,13 +4,67 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
  */
 
-body {
-    padding-top: 70px; /* Required padding for .navbar-fixed-top. Change if height of navigation changes. */
-}
-
 .thumbnail-head {
 	vertical-align: top;
 }
+
+.main-container {
+}
+
+.search{
+    width: 40%;
+    padding-right: 50x;
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
+ #sidebar-wrapper {
+     height: 100%;
+     padding: 0 0 50px 0;
+     position: fixed;
+    left:0;
+ }
+
+
+ .logo{
+    height: 45px;
+    margin-left: 20px;
+ }
+
+  #sidebar {
+     border-right: 1px solid gray;
+     position: relative;
+     height: 100%;
+     overflow-y: auto;
+     padding: 10px 15px 0;
+     overflow-x: hidden;
+ }
 
 .doc-caption {
 	word-wrap: break-word;
@@ -22,6 +76,18 @@ body {
 .thumbnail {
 	border: none;
 	margin-bottom: 50px;
+    transition:all 0.3s ease;
+}
+
+.panel-label{
+    margin-right: 10px;
+}
+
+.img-responsive:hover{
+    -webkit-transform: scale(1.3);
+        -ms-transform: scale(1.3);
+        transform: scale(1.3);
+    z-index: 1;
 }
 
 .thumbnail > a {
@@ -29,6 +95,10 @@ body {
     height: 300px;
     /* for center alignment */
     position: relative;
+}
+
+.panel-child{
+    transition: all 1s ease-in-out;
 }
 
 .thumbnail > a > img {

@@ -14,8 +14,16 @@ Template.registerHelper('arrayify', function(obj){
 	for (let key in obj){
 		ret.push({key: key, obj: obj[key]});
 	}
-	console.log(ret[0]);
+	//console.log(ret[0]);
 	return ret;
+});
+
+Template.registerHelper('num_refs', (refs) => {
+	return Object.keys(refs).length;
+});
+
+Template.registerHelper('num_tags', (tags) => {
+	return tags.length;
 });
 
 Template.documents.helpers({
@@ -28,4 +36,53 @@ Template.documents.helpers({
 		});
 		return ret;
 	},
+});
+
+Template.document.onRendered(function(){
+	this.$(".thumb-doc").hide(0).delay(500).fadeIn(3000);
+});
+
+Template.document.events({
+	'click .js-thumb-click'(event){
+		event.preventDefault();
+		Session.set('focus_doc', this);
+	}
+});
+
+Template.focus_document.helpers({
+	focus_document(){
+		let doc = Session.get('focus_doc');
+		if (doc){
+			return doc;
+		}
+		else{
+			let fdoc = Collections['documents'].findOne();
+			if (fdoc){
+				Session.set('focus_doc', fdoc.documentRefFirstPage());
+			}
+			return fdoc;
+		}
+	},
+});
+
+Template.focus_document.onRendered(function(){
+	this.$(".panel-wrapper").hide(0).delay(500).fadeIn(3000);
+});
+
+Template.navigation.helpers({
+  settings: function() {
+  	Meteor.subscribe('documents');
+    return {
+      limit: 10,
+      rules: [
+        {
+          token: 'name=',
+          collection: Collections['documents'],
+          field: 'document_name',
+          matchAll: true,
+          template: Template.document_pill
+        },
+      ]
+    };
+  }
 });

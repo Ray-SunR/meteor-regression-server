@@ -12,14 +12,14 @@ export const Collections = {
 Collections['documents'].helpers({
 	documentResolver(){
 		Meteor.subscribe('references');
-		console.log(`Looking for document_id: ${this._id}`);
+		//console.log(`Looking for document_id: ${this._id}`);
 
 		let reference_ids = this.references;
 		let reference_rets = {};
 		this.references = reference_rets;
 
 		for (let version in reference_ids){
-			console.log(`num_records: ${Collections['references'].find().count()}, version: ${version}, ref_id: ${reference_ids[version]}`);
+			//console.log(`num_records: ${Collections['references'].find().count()}, version: ${version}, ref_id: ${reference_ids[version]}`);
 			let reference_id = reference_ids[version];
 
 			let reference_ret = Collections['references'].findOne({_id: reference_id});
@@ -51,7 +51,7 @@ Collections['references'].helpers({
 	referenceResolver(){
 		Meteor.subscribe('pages');
 		Meteor.subscribe('differences');
-		console.log(`Looking for reference_id: ${this._id}`);
+		//console.log(`Looking for reference_id: ${this._id}`);
 		let diff_ids = this.diffs;
 		let page_ids = this.pages;
 		let diff_rets = {};
@@ -82,7 +82,7 @@ Collections['references'].helpers({
 
 Collections['differences'].helpers({
 	differenceResolver(){
-		console.log(`Looking for difference_id: ${this._id}`);
+		//console.log(`Looking for difference_id: ${this._id}`);
 		Meteor.subscribe('difference_metrics');
 		Meteor.subscribe('pages');
 		let metric_ids = this.metrics;
