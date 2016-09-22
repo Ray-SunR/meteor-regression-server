@@ -1,7 +1,6 @@
-<head>
 
+<head>
     <title>PDFTron Regression Tool</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <body>
@@ -17,37 +16,32 @@
 </template>
 
 <template name="navigation">
- <!-- Navigation -->
-      <div class="navbar-fixed">
-    <nav>
-      <div class="nav-wrapper">
-        <a href="PDFTron_logo_cropped.svg" class="brand-logo">
-          <img class="logo" src="PDFTron_logo_cropped.svg" alt="logo">
-        </a>  
-        <form>
-        <div class="input-field search">
-          {{> inputAutocomplete settings=settings id="legend" class="form-control" name="legend" placeholder="Legend" }}
-          <label for="search"><i class="material-icons">search</i></label>
-          <i class="material-icons">close</i>
+<div class="navbar navbar-default">
+  <div class="container-fluid">
+    <form class="navbar-form navbar-left">
+        <div class="form-group">
+          <input type="text" class="form-control" id="tokenfield" placeholder="Search">
         </div>
+        <button type="submit" class="btn btn-default js-triger-search">Submit</button>
       </form>
-      </div>
-    </nav>
   </div>
+</div>
 </template>
 
 <template name="maincontent">
 <!-- Page Content -->
     <div class="container-fluid main-container">
-      <div id="sidebar-wrapper" class="col-lg-3 col-md-3 col-xs-6">
+      <div class="row">
+      <div id="sidebar-wrapper" class="col-lg-3">
         <div id="sidebar">
           {{> focus_document}}
         </div>
       </div>
-      <div class="col-lg-9 col-lg-offset-3 col-md-9 col-md-offset-3 col-xs-6 col-xs-offset-6">
+      <div class="col-lg-9 col-lg-offset-3">
         <div class="row">
             {{> documents}}
         </div>
+      </div>
       </div>
     </div>
     <!-- /.container -->
@@ -55,57 +49,59 @@
 
 <template name="focus_document">
   {{#with focus_document}}
-  <div class="panel-wrapper">
-    <div class="card blue-grey darken-1">
-      <div class="card-content white-text">
-        <span class="card-title">Document name</span>
+    <div class="panel panel-success">
+      <div class="panel-heading">
+        <h3> Document Name </h3>
+      </div>
+      <div class="panel-body">
         <p>{{document_name}}</p>
       </div>
     </div>
 
-    <div class="card blue-grey darken-1">
-      <div class="card-content white-text">
-        <span class="card-title">Extension</span>
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        <h3>Extension</h3>
+      </div>
+      <div class="panel-body">
         <p>{{ext}}</p>
       </div>
     </div>
 
-    <div class="card blue-grey darken-1">
-      <div class="card-content white-text">
-        <span class="card-title">Path</span>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3>Path</h3>
+      </div>
+      <div class="panel-body">
         <p>{{path}}</p>
       </div>
     </div>
 
-    <div class="card blue-grey darken-1">
-      <div class="card-content white-text">
-        <span class="card-title">Reference versions</span>
-        <span class="new badge red card-title " data-badge-caption=" refs">{{num_refs references}}</span>
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3>Reference versions <span class="badge">{{num_refs references}}</span></h3>
+      </div>
         <div class="panel-body">
           <p>
             {{#each arrayify references}}
-            <span class="chip">{{key}}</span>
+            <span class="label label-warning">{{key}}</span>
             {{/each}}
           </p>
         </div>
-      </div>
     </div>
 
-    <div class="card blue-grey darken-1">
-      <div class="card-content white-text">
-        <span class="card-title">Tags</span>
-        <span class="new badge blue card-title" data-badge-caption=" tags">{{num_tags tags}}</span>
+    <div class="panel panel-warning">
+      <div class="panel-heading">
+        <h3>Tags <span class="badge">{{num_tags tags}}</span> </h3>
+      </div>
         <div class="panel-body">
           <p>
             {{#each tags}}
-              <span class="chip">{{this}}</span>
+              <span class="label label-warning">{{this}}</span>
             {{/each}}
           </p>
         </div>
-      </div>
     </div>
 
-  </div>
   {{/with}}
 </template>
 
@@ -118,7 +114,7 @@
 </template>
 
 <template name="document">
-  <div class="col-lg-5ths col-md-5ths col-xs-12 thumb-doc" id={{hash}}>
+  <div class="col-lg-2 col-md-4 col-sm-6 col-xs-12 thumb-doc" id={{hash}}>
     <div class="thumbnail-head">
       <div class = "doc-caption">
         {{document_name}}
@@ -212,7 +208,7 @@
 </template>
 
 <template name="document_pill">
-  <p> class="search-ret">
-    {{document_name}}
-  </p>
+  <div class="card-panel teal lighten-2 search-ret">
+    {{token}}
+  </div>
 </template>

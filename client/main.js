@@ -3,7 +3,14 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Collections } from '../api/collections.js';
 import { Meteor } from 'meteor/meteor';
 
+import { tokenfield } from 'bootstrap-tokenfield'
+import { typeahead } from 'typeahead'
+
 import './main.html';
+
+import '../node_modules/bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css';
+import '../node_modules/bootstrap-tokenfield/dist/css/tokenfield-typeahead.css';
+import '../node_modules/typeahead/style.css';
 
 Template.documents.onCreated(function bodyOnCreated() {
 
@@ -69,20 +76,66 @@ Template.focus_document.onRendered(function(){
 	this.$(".panel-wrapper").hide(0).delay(500).fadeIn(3000);
 });
 
+Tokens = new Mongo.Collection(null);
+
+['name=', 'ref_version=', 'tags='].forEach(function(token){
+	Tokens.insert({token: token});
+});
+
+Template.navigation.rendered = function() {
+  //Meteor.typeahead.inject();
+
+  //$('#tokenfield').tokenfield();
+  //$('#tokenfield').tokenfield('setTokens', ['blue','red','white']);
+
+  $('#tokenfield')
+	  
+  .on('tokenfield:createtoken', function (e) {
+    var data = e.attrs.value.split('|')
+    e.attrs.value = data[1] || data[0]
+    e.attrs.label = data[1] ? data[0] + ' (' + data[1] + ')' : data[0]
+  })
+
+  .on('tokenfield:createdtoken', function (e) {
+    // Über-simplistic e-mail validation
+    var re = /\S+@\S+\.\S+/
+    var valid = re.test(e.attrs.value)
+    if (!valid) {
+      $(e.relatedTarget).addClass('invalid')
+    }
+  })
+
+  .on('tokenfield:edittoken', function (e) {
+    if (e.attrs.label !== e.attrs.value) {
+      var label = e.attrs.label.split(' (')
+      e.attrs.value = label[0] + '|' + e.attrs.value
+    }
+  })
+
+  .on('tokenfield:removedtoken', function (e) {
+    alert('Token removed! Token value was: ' + e.attrs.value)
+  })
+
+  .tokenfield();
+  $('#tokenfield').tokenfield('setTokens', ['blue','red','white']);
+};
+
 Template.navigation.helpers({
-  settings: function() {
-  	Meteor.subscribe('documents');
-    return {
-      limit: 10,
-      rules: [
-        {
-          token: 'name=',
-          collection: Collections['documents'],
-          field: 'document_name',
-          matchAll: true,
-          template: Template.document_pill
-        },
-      ]
-    };
-  }
+	controls(){
+		return Tokens.find().fetch();
+	}
+});
+
+Template.navigation.events({
+	'submit .search-form'(event){
+		console.log('here');
+			event.preventDefault();
+	}, 
+	'click .js-triger-search'(event){
+		event.preventDefault();
+		let ret = $('#tokenfield').tokenfield('getTokens');
+		ret.forEach(function(item){
+			console.log(item);
+		});
+	}
 });

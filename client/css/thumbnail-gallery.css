@@ -13,7 +13,17 @@
 
 .search{
     width: 40%;
+    margin-left: 50px;
     padding-right: 50x;
+    float: right;
+}
+
+.invalid {
+    color: red;
+}
+
+.search-ret {
+    display: block;
 }
 
 .material-icons {
