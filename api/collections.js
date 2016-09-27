@@ -36,11 +36,33 @@ Collections['documents'].helpers({
 			for (key in ret.references){
 				let ref = ret.references[key];
 				this.thumb_version = key;
+				this.num_pages = Object.keys(ref.pages).length;
 
 				if (1 in ref.pages){
 					this.thumb_page_version = ref.pages[1].version;
 					this.thumb_page_hash = ref.pages[1].hash;
 				}
+
+				// Calculate avg diff %
+				let total_diff_pct = 0;
+				let total_num_page_diff = 0;
+				for (diff_version in ref.diffs){
+					let diff = ref.diffs[diff_version];
+					if (diff){
+						total_num_page_diff = diff.num_page_diffs;
+						for (page_num in diff.metrics){
+							let metric = diff.metrics[page_num];
+							if (metric){
+								total_diff_pct += metric.diff_percentage;
+							}
+						}
+					}
+				}
+				this.avg_diff_pct = (total_diff_pct / this.num_pages).toFixed(2) + '%' ;
+				this.avg_num_page_diff = total_num_page_diff / this.num_pages;
+				//console.log(`Average diff %: ${this.avg_diff_pct}`);
+				//console.log(`Average page diff count: ${this.avg_num_page_diff}`);
+
 				return this;
 			}
 		}
@@ -128,21 +150,21 @@ Collections['pages'].helpers({
 if (Meteor.isServer){
 	Meteor.publish('documents', function documentsPublication() {
 		return Collections['documents'].find();
-  });
+	});
 
 	Meteor.publish('references', function referencesPublication() {
 		return Collections['references'].find();
-  });
+	});
 
-  Meteor.publish('pages', function(){
-  	return Collections['pages'].find();
-  });
+	Meteor.publish('pages', function(){
+		return Collections['pages'].find();
+	});
 
-  Meteor.publish('differences', function(){
-  	return Collections['differences'].find();
-  });
+	Meteor.publish('differences', function(){
+		return Collections['differences'].find();
+	});
 
-  Meteor.publish('difference_metrics', function(){
-  	return Collections['difference_metrics'].find();
-  });
+	Meteor.publish('difference_metrics', function(){
+		return Collections['difference_metrics'].find();
+	});
 }

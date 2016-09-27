@@ -4,13 +4,21 @@ import { Collections } from '../api/collections.js';
 import { Meteor } from 'meteor/meteor';
 
 import { tokenfield } from 'bootstrap-tokenfield'
-import { typeahead } from 'typeahead'
 
 import './main.html';
 
 import '../node_modules/bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css';
 import '../node_modules/bootstrap-tokenfield/dist/css/tokenfield-typeahead.css';
-import '../node_modules/typeahead/style.css';
+
+if (Meteor.isClient){
+	typeahead = require("typeahead.js/dist/typeahead.jquery.min.js");
+	Bloodhound = require("typeahead.js/dist/bloodhound.min.js");
+	Session.set('sort_document_name', true);
+	Session.set('sort_num_pages', false);
+	Session.set('sort_avg_diff', false);
+	Session.set('sort_asc', true);
+	Session.set('filters', {});
+}
 
 Template.documents.onCreated(function bodyOnCreated() {
 
@@ -35,12 +43,68 @@ Template.registerHelper('num_tags', (tags) => {
 
 Template.documents.helpers({
 	documents(){
-		let ready = Meteor.subscribe('documents').ready();
+		if (!Meteor.subscribe('documents').ready()){
+			return;
+		}
 		let cursor = Collections['documents'].find();
 		let ret = [];
 		cursor.forEach(document => {
-			ret.push(document.documentRefFirstPage());
+			if (Object.keys(Session.get('filters'))){
+				// has filter
+				obj = Session.get('filters');
+
+				if (obj.dname == document.document_name){
+					ret.push(document.documentRefFirstPage());
+				}
+			}
+			else{
+				ret.push(document.documentRefFirstPage());
+			}
 		});
+
+		if (Session.get('sort_document_name')){
+			ret.sort(function(a, b){
+				if (a.document_name > b.document_name){
+					if (Session.get('sort_asc')){
+						return 1;
+					}
+					else {
+						return -1;
+					}
+				}
+
+				if (a.document_name < b.document_name){
+					if (Session.get('sort_asc')){
+						return -1;
+					}
+					else {
+						return 1;
+					}
+				}
+			});
+		}
+		else if (Session.get('sort_num_pages')){
+			ret.sort(function(a, b){
+				if (a.num_pages > b.num_pages){
+					if (Session.get('sort_asc')){
+						return 1;
+					}
+					else{
+						return -1;
+					}
+				}
+
+				if (a.num_pages < b.num_pages){
+					if (Session.get('sort_asc')){
+						return -1;
+					}
+					else {
+						return 1;
+					}
+				}
+			});
+		}
+		console.log(ret[0]);
 		return ret;
 	},
 });
@@ -76,66 +140,84 @@ Template.focus_document.onRendered(function(){
 	this.$(".panel-wrapper").hide(0).delay(500).fadeIn(3000);
 });
 
-Tokens = new Mongo.Collection(null);
-
-['name=', 'ref_version=', 'tags='].forEach(function(token){
-	Tokens.insert({token: token});
-});
-
 Template.navigation.rendered = function() {
-  //Meteor.typeahead.inject();
+	var engine = new Bloodhound({
+		local: [],
+		datumTokenizer: function(d) {
+			return Bloodhound.tokenizers.whitespace(d.value);
+		},
+		queryTokenizer: Bloodhound.tokenizers.whitespace
+	});
 
-  //$('#tokenfield').tokenfield();
-  //$('#tokenfield').tokenfield('setTokens', ['blue','red','white']);
+	engine.initialize();
 
-  $('#tokenfield')
-	  
-  .on('tokenfield:createtoken', function (e) {
-    var data = e.attrs.value.split('|')
-    e.attrs.value = data[1] || data[0]
-    e.attrs.label = data[1] ? data[0] + ' (' + data[1] + ')' : data[0]
-  })
-
-  .on('tokenfield:createdtoken', function (e) {
-    // Über-simplistic e-mail validation
-    var re = /\S+@\S+\.\S+/
-    var valid = re.test(e.attrs.value)
-    if (!valid) {
-      $(e.relatedTarget).addClass('invalid')
-    }
-  })
-
-  .on('tokenfield:edittoken', function (e) {
-    if (e.attrs.label !== e.attrs.value) {
-      var label = e.attrs.label.split(' (')
-      e.attrs.value = label[0] + '|' + e.attrs.value
-    }
-  })
-
-  .on('tokenfield:removedtoken', function (e) {
-    alert('Token removed! Token value was: ' + e.attrs.value)
-  })
-
-  .tokenfield();
-  $('#tokenfield').tokenfield('setTokens', ['blue','red','white']);
+	$('#tokenfield-typeahead').tokenfield({
+		typeahead: [null,
+		{
+			name: 'tags',
+			display: 'value',
+			source: engine.ttAdapter()
+		}]
+	});
 };
 
 Template.navigation.helpers({
-	controls(){
-		return Tokens.find().fetch();
-	}
 });
 
 Template.navigation.events({
-	'submit .search-form'(event){
+	'submit #tokenfield-typeahead'(event){
 		console.log('here');
-			event.preventDefault();
+		event.preventDefault();
 	}, 
 	'click .js-triger-search'(event){
 		event.preventDefault();
-		let ret = $('#tokenfield').tokenfield('getTokens');
+		let ret = $('#tokenfield-typeahead').tokenfield('getTokens');
 		ret.forEach(function(item){
-			console.log(item);
+			let field = item.value;
+			let regex = /(dname|num_pages|tags)(==|<|>|<=|>=|!=|\?=|!\?=)(\d+|".*")/g
+			let re = new RegExp(regex);
+			let ret = re.exec(field);
+			if (ret){
+				console.log(ret[1]);
+				console.log(ret[2]);
+				console.log(ret[3]);
+
+				if (ret[1] === "dname"){
+					if (ret[2] == "=="){
+						Session
+					}
+					else if (ret[2] == "!="){
+
+					}
+				}
+				else if (ret[1] == "num_pages"){
+
+				}
+				else if (ret[1] == "tags"){
+
+				}
+			}
 		});
+	},
+	'click .js-sort-dname'(event){
+		event.preventDefault();
+		console.log('js-sort-dname clicked');
+		Session.set('sort_document_name', true);
+		Session.set('sort_avg_diff', false);
+		Session.set('sort_num_pages', false);
+	},
+	'click .js-sort-numpages'(event){
+		event.preventDefault();
+		Session.set('sort_document_name', false);
+		Session.set('sort_avg_diff', false);
+		Session.set('sort_num_pages', true);
+	},
+	'click .js-sort-asc'(event){
+		event.preventDefault();
+		Session.set('sort_asc', true);
+	},
+	'click .js-sort-desc'(event){
+		event.preventDefault();
+		Session.set('sort_asc', false);
 	}
 });

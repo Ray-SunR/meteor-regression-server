@@ -9,6 +9,6 @@
     "i": "^0.3.5",
     "meteor-node-stubs": "~0.2.0",
     "npm": "^3.10.8",
-    "typeahead": "^0.2.2"
+    "typeahead.js": "^0.11.1"
   }
 }

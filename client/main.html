@@ -1,11 +1,9 @@
 
 <head>
-    <title>PDFTron Regression Tool</title>
+  <title>PDFTron Regression Tool</title>
 </head>
 
 <body>
-
-   
 
 </body>
 
@@ -16,22 +14,58 @@
 </template>
 
 <template name="navigation">
-<div class="navbar navbar-default">
-  <div class="container-fluid">
-    <form class="navbar-form navbar-left">
-        <div class="form-group">
-          <input type="text" class="form-control" id="tokenfield" placeholder="Search">
+  <div class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-2">
+          <div class="navbar-header">
+           <a class="navbar-brand" href="www.pdftron.com">
+            <img alt="Brand" src="/PDFTron_logo_cropped.svg">
+          </a>
         </div>
-        <button type="submit" class="btn btn-default js-triger-search">Submit</button>
-      </form>
+      </div>    
+      <div class="col-lg-4">
+       <div class="collapse navbar-collapse collapse-style" id="bs-example-navbar-collapse-1">
+         <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sort field<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#" class="js-sort-dname">Document name</a></li>
+              <li><a href="#" class="js-sort-numpages">Number of pages</a></li>
+              <li><a href="#" class="js-sort-avgdiff">Average difference %</a></li>
+            </ul>
+          </li>
+        </ul>
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Order by <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#" class="js-sort-asc">Ascending</a></li>
+              <li><a href="#" class="js-sort-desc">Descending</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <form class="navbar-form">
+        <div class="input-group">
+         <input type="text" class="form-control" id="tokenfield-typeahead" placeholder="Filter docs using: dname=, tags=, num_page=..."/>
+         <span class="input-group-btn">
+          <button class="btn btn-default js-triger-search" type="button">Search</button>
+        </span>
+      </div>
+    </form>
   </div>
+</div>
+</div>
 </div>
 </template>
 
 <template name="maincontent">
-<!-- Page Content -->
-    <div class="container-fluid main-container">
-      <div class="row">
+  <!-- Page Content -->
+  <div class="container-fluid main-container">
+    <div class="row">
       <div id="sidebar-wrapper" class="col-lg-3">
         <div id="sidebar">
           {{> focus_document}}
@@ -39,82 +73,85 @@
       </div>
       <div class="col-lg-9 col-lg-offset-3">
         <div class="row">
-            {{> documents}}
+          {{> documents}}
         </div>
       </div>
-      </div>
     </div>
-    <!-- /.container -->
+  </div>
+  <!-- /.container -->
 </template>
 
 <template name="focus_document">
   {{#with focus_document}}
-    <div class="panel panel-success">
-      <div class="panel-heading">
-        <h3> Document Name </h3>
-      </div>
-      <div class="panel-body">
-        <p>{{document_name}}</p>
-      </div>
+  <div class="panel panel-success">
+    <div class="panel-heading">
+      <h3> Document Name </h3>
     </div>
+    <div class="panel-body">
+      <p>{{document_name}}</p>
+      <p>Avg page diff %: {{avg_diff_pct}}</p>
+      <p>Avg page num diff: {{avg_num_page_diff}}</p>
+      <p>Num pages: {{num_pages}} </p>
+    </div>
+  </div>
 
-    <div class="panel panel-info">
-      <div class="panel-heading">
-        <h3>Extension</h3>
-      </div>
-      <div class="panel-body">
-        <p>{{ext}}</p>
-      </div>
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <h3>Extension</h3>
     </div>
+    <div class="panel-body">
+      <p>{{ext}}</p>
+    </div>
+  </div>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3>Path</h3>
-      </div>
-      <div class="panel-body">
-        <p>{{path}}</p>
-      </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3>Path</h3>
     </div>
+    <div class="panel-body">
+      <p>{{path}}</p>
+    </div>
+  </div>
 
-    <div class="panel panel-primary">
-      <div class="panel-heading">
-        <h3>Reference versions <span class="badge">{{num_refs references}}</span></h3>
-      </div>
-        <div class="panel-body">
-          <p>
-            {{#each arrayify references}}
-            <span class="label label-warning">{{key}}</span>
-            {{/each}}
-          </p>
-        </div>
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3>Reference versions <span class="badge">{{num_refs references}}</span></h3>
     </div>
+    <div class="panel-body">
+      <p>
+        {{#each arrayify references}}
+        <span class="label label-warning">{{key}}</span>
+        {{/each}}
+      </p>
+    </div>
+  </div>
 
-    <div class="panel panel-warning">
-      <div class="panel-heading">
-        <h3>Tags <span class="badge">{{num_tags tags}}</span> </h3>
-      </div>
-        <div class="panel-body">
-          <p>
-            {{#each tags}}
-              <span class="label label-warning">{{this}}</span>
-            {{/each}}
-          </p>
-        </div>
+  <div class="panel panel-warning">
+    <div class="panel-heading">
+      <h3>Tags <span class="badge">{{num_tags tags}}</span> </h3>
     </div>
+    <div class="panel-body">
+      <p>
+        {{#each tags}}
+        <span class="label label-warning">{{this}}</span>
+        {{/each}}
+      </p>
+    </div>
+  </div>
 
   {{/with}}
 </template>
 
 <template name="documents">
-<div class="row">
+  <div class="row">
     {{#each documents}}
     {{> document}}
     {{/each}}
-    </div>
+  </div>
 </template>
 
 <template name="document">
-  <div class="col-lg-2 col-md-4 col-sm-6 col-xs-12 thumb-doc" id={{hash}}>
+  <div class="col-lg-5ths col-md-4 col-sm-6 col-xs-12 thumb-doc" id={{hash}}>
     <div class="thumbnail-head">
       <div class = "doc-caption">
         {{document_name}}
@@ -135,14 +172,14 @@
 </template>
 
 <template name="footer">
-<!-- Footer -->
-      <footer>
-          <div class="row">
-              <div class="col-lg-12">
-                  <p>Copyright &copy; Your Website 2014</p>
-              </div>
-          </div>
-      </footer>
+  <!-- Footer -->
+  <footer>
+    <div class="row">
+      <div class="col-lg-12">
+        <p>Copyright &copy; Your Website 2014</p>
+      </div>
+    </div>
+  </footer>
 </template>
 
 <template name="references">
@@ -177,10 +214,10 @@
 </template>
 
 <template name="diffs">
-{{#each arrayify diffs}}
-<h3> Version: {{key}} </h3>
-{{> diff obj}}
-{{/each}}
+  {{#each arrayify diffs}}
+  <h3> Version: {{key}} </h3>
+  {{> diff obj}}
+  {{/each}}
 </template>
 
 <template name="diff">
