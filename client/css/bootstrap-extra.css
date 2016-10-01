@@ -13,7 +13,7 @@
     float: left;
 }
 @media (min-width: 768px) {
-.col-sm-5ths {
+    .col-sm-5ths {
         width: 20%;
         float: left;
     }
@@ -29,4 +29,8 @@
         width: 20%;
         float: left;
     }
+}
+
+.maincontent {
+    padding-top: 50px;
 }

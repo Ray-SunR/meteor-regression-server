@@ -10,11 +10,10 @@
 <template name="layout">
   {{> navigation}}
   {{> yield "body"}}
-  {{> footer}}
 </template>
 
 <template name="navigation">
-  <div class="navbar navbar-default">
+  <div class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-2">
@@ -24,7 +23,7 @@
           </a>
         </div>
       </div>    
-      <div class="col-lg-4">
+      <div class="col-lg-3">
        <div class="collapse navbar-collapse collapse-style" id="bs-example-navbar-collapse-1">
          <ul class="nav navbar-nav">
           <li class="dropdown">
@@ -47,10 +46,10 @@
         </ul>
       </div>
     </div>
-    <div class="col-lg-6">
+    <div class="col-lg-7">
       <form class="navbar-form">
         <div class="input-group">
-         <input type="text" class="form-control" id="tokenfield-typeahead" placeholder="Filter docs using: dname=, tags=, num_page=..."/>
+         <input type="text" class="form-control" id="tokenfield-typeahead" placeholder="Filter docs using: dname=, tags=, num_page=, fajsdfjalsdjfaskdjfasd"/>
          <span class="input-group-btn">
           <button class="btn btn-default js-triger-search" type="button">Search</button>
         </span>
@@ -64,11 +63,11 @@
 
 <template name="maincontent">
   <!-- Page Content -->
-  <div class="container-fluid main-container">
+  <div class="container-fluid main-container maincontent">
     <div class="row">
       <div id="sidebar-wrapper" class="col-lg-3">
         <div id="sidebar">
-          {{> focus_document}}
+          {{> side_panel}}
         </div>
       </div>
       <div class="col-lg-9 col-lg-offset-3">
@@ -81,8 +80,16 @@
   <!-- /.container -->
 </template>
 
-<template name="focus_document">
-  {{#with focus_document}}
+<template name="side_panel">
+  {{#with side_panel}}
+
+
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <div class="huge">{{totaldocs}} Docs</div>
+      <div id="filtered_count">{{filtereddocs}} after filtering</div>
+    </div>
+  </div>
   <div class="panel panel-success">
     <div class="panel-heading">
       <h3> Document Name </h3>
@@ -169,17 +176,6 @@
       {{/if}}
     </div>
   </div>
-</template>
-
-<template name="footer">
-  <!-- Footer -->
-  <footer>
-    <div class="row">
-      <div class="col-lg-12">
-        <p>Copyright &copy; Your Website 2014</p>
-      </div>
-    </div>
-  </footer>
 </template>
 
 <template name="references">
