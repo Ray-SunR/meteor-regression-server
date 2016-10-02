@@ -58,7 +58,7 @@ Collections['documents'].helpers({
 						}
 					}
 				}
-				this.avg_diff_pct = (total_diff_pct / this.num_pages);
+				this.avg_diff_pct = (total_diff_pct / this.num_pages).toFixed(2);
 				this.avg_num_page_diff = total_num_page_diff / this.num_pages;
 				//console.log(`Average diff %: ${this.avg_diff_pct}`);
 				//console.log(`Average page diff count: ${this.avg_num_page_diff}`);

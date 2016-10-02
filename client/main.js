@@ -10,67 +10,44 @@ import './main.html';
 import '../node_modules/bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css';
 import '../node_modules/bootstrap-tokenfield/dist/css/tokenfield-typeahead.css';
 
-function FilterDefinition(name, okoperators, transform_func){
+function FilterDefinition(name, okoperators, transform_func, convert_func){
 	return  {
 		name: name,
 		okoperators: okoperators,
 		operator: '',
 		value: '',
-		transform_func: transform_func
+		transform_func: transform_func,
+		convert_func: convert_func
 	};
 }
 
 function FilterMatchImpl(filt, document){
-	let filter_val = filt.value;
+	let filter_val = filt.convert_func(filt.value);
 	let target_val = filt.transform_func(document);
-	let target_val_float = parseFloat(target_val);
-	let filter_val_float = parseFloat(filter_val);
-	console.log(`tags: ${document.tags}`);
-	console.log(`filter_val: ${filter_val}`);
-	console.log(`target_val: ${target_val}`);
-	// console.log(`filter_val_float: ${filter_val_float}`);
-	// console.log(`target_val_float: ${target_val_float}`);
+
 	if (filt.operator === '==' || filt.operator === '='){
-		if (target_val_float != NaN && filter_val_float != NaN){
-			return filter_val_float === target_val_float;
-		}
-		return filter_val == target_val;
+		return filter_val === target_val;
 	}
 	else if (filt.operator === '!='){
-		if (target_val_float != NaN && filter_val_float != NaN){
-			return filter_val_float != target_val_float;
-		}
 		return filter_val != target_val;
 	} 
 	else if (filt.operator === '>='){
-		if (target_val_float != NaN && filter_val_float != NaN){
-			return target_val_float >= filter_val_float;
-		}
 		return target_val >= filter_val;
 	}
 	else if (filt.operator === '<='){
-		if (target_val_float != NaN && filter_val_float != NaN){
-			return target_val_float <= filter_val_float;
-		}
 		return target_val <= filter_val;
 	}
 	else if (filt.operator === '<'){
-		if (target_val_float != NaN && filter_val_float != NaN){
-			return target_val_float < filter_val_float;
-		}
 		return target_val < filter_val;
 	}
 	else if (filt.operator === '>'){
-		if (target_val_float != NaN && filter_val_float != NaN){
-			return target_val_float > filter_val_float;
-		}
 		return target_val > filter_val;
 	}
 	else if (filt.operator === '?='){
-		return String(target_val).indexOf(filter_val) != -1;
+		return target_val.indexOf(filter_val) != -1;
 	}
 	else if (filt.operator === '!?='){
-		return String(target_val).indexOf(filter_val) === -1;
+		return target_val.indexOf(filter_val) === -1;
 	}
 
 	return true;
@@ -80,15 +57,23 @@ function FilterDefs(){
 	return {
 		'dname': FilterDefinition('dname', ['==', '=', '!='], function(document){
 			return document.document_name;
+		}, function(value){
+			return value;
 		}),
 		'num_pages': FilterDefinition('num_pages', ['==', '=', '!='], function(document){
-			return String(document.num_pages);
+			return document.num_pages;
+		}, function(value){
+			return parseInt(value);
 		}),
 		'avg_diff': FilterDefinition('avg_diff', ['==', '=', '!=', '>', '<', '<=', '>='], function(document){
 			return document.avg_diff_pct;
+		}, function(value){
+			return parseFloat(value);
 		}),
 		'tags': FilterDefinition('tags', ['==', '=', '!=', '?=', '!?='], function(document){
 			return document.tags;
+		}, function(value){
+			return String(value);
 		})
 	}
 }
@@ -139,6 +124,10 @@ Template.registerHelper('filtereddocs', () => {
 	return Session.get('filtered_doc_count');
 });
 
+Template.registerHelper('', (obj) => {
+	return obj.length === 0;
+});
+
 
 function CreateFilter(filter){
 	let new_filter = FilterDefs()[filter.fname];
@@ -176,9 +165,11 @@ Template.documents.helpers({
 
 				let flag = true;
 				filters.forEach(filter => {
-					if (!FilterMatchImpl(filter, document)){
-						flag = false;
+					let tmp = FilterMatchImpl(filter, document);
+					if (document.document_name == "3a.pdf"){
+						console.log(tmp);
 					}
+					flag = flag && FilterMatchImpl(filter, document);
 				});
 
 				if (flag){
@@ -246,6 +237,12 @@ Template.document.events({
 	'click .js-thumb-click'(event){
 		event.preventDefault();
 		Session.set('focus_doc', this);
+	}, 
+	'click .js-set-tag-filter'(event){
+		event.preventDefault();
+
+		$('#tokenfield-typeahead').tokenfield('createToken', 'tags?=' + event.target.text);
+		AddFilter('tags?=' + event.target.text);
 	}
 });
 
@@ -310,26 +307,32 @@ Template.navigation.rendered = function() {
 Template.navigation.helpers({
 });
 
+function AddFilter(token){
+	token = parseToken(token);
+	if (token){
+		let key = token[0];
+		let filters = Session.get('filters');
+		if (!(key in filters)){
+			filters[key] = {};
+			filters[key].operator = token[2];
+			filters[key].fname = token[1];
+			filters[key].value = token[4]
+			console.log(`Filter value: ${filters[key].value}`);
+			Session.set('filters', filters);
+		}
+	}
+}
+
 Template.navigation.events({
 	'submit #tokenfield-typeahead'(event){
 		event.preventDefault();
 	}, 
 	'click .js-triger-search'(event){
 		event.preventDefault();
+
 		let ret = $('#tokenfield-typeahead').tokenfield('getTokens');
-		ret.forEach((item) => {
-			let ret = parseToken(item.value);
-			if (ret){
-				let key = ret[0];
-				let filters = Session.get('filters');
-				if (!(key in filters)){
-					filters[key] = {};
-					filters[key].operator = ret[2];
-					filters[key].fname = ret[1];
-					filters[key].value = ret[3] || ret[4]
-					Session.set('filters', filters);
-				}
-			}
+		ret.forEach((token) => {
+			AddFilter(token.value);
 		});
 	},
 	'click .js-sort-dname'(event){
