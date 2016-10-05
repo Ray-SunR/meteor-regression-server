@@ -27,8 +27,8 @@
        <div class="collapse navbar-collapse collapse-style" id="bs-example-navbar-collapse-1">
          <ul class="nav navbar-nav">
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sort field<span class="caret"></span></a>
-            <ul class="dropdown-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >Sort field<span class="caret"></span></a>
+            <ul class="dropdown-menu" id="sort-dropdown">
               <li><a href="#" class="js-sort-dname">Document name</a></li>
               <li><a href="#" class="js-sort-numpages">Number of pages</a></li>
               <li><a href="#" class="js-sort-avgdiff">Average difference %</a></li>
@@ -37,8 +37,8 @@
         </ul>
         <ul class="nav navbar-nav">
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Order by <span class="caret"></span></a>
-            <ul class="dropdown-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >Order by <span class="caret"></span></a>
+            <ul class="dropdown-menu" id="orderby-dropdown">
               <li><a href="#" class="js-sort-asc">Ascending</a></li>
               <li><a href="#" class="js-sort-desc">Descending</a></li>
             </ul>
@@ -83,70 +83,96 @@
 <template name="side_panel">
   {{#with side_panel}}
 
-
-  <div class="panel panel-primary">
-    <div class="panel-heading">
-      <div class="huge">{{totaldocs}} Docs</div>
-      <div id="filtered_count">{{filtereddocs}} after filtering</div>
-    </div>
-  </div>
-  <div class="panel panel-success">
-    <div class="panel-heading">
-      <h3> Document Name </h3>
-    </div>
-    <div class="panel-body">
-      <p>{{document_name}}</p>
-      <p>Avg page diff %: {{avg_diff_pct}}</p>
-      <p>Avg page num diff: {{avg_num_page_diff}}</p>
-      <p>Num pages: {{num_pages}} </p>
-    </div>
-  </div>
-
-  <div class="panel panel-info">
-    <div class="panel-heading">
-      <h3>Extension</h3>
-    </div>
-    <div class="panel-body">
-      <p>{{ext}}</p>
-    </div>
-  </div>
-
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3>Path</h3>
-    </div>
-    <div class="panel-body">
-      <p>{{path}}</p>
-    </div>
-  </div>
-
-  <div class="panel panel-primary">
-    <div class="panel-heading">
-      <h3>Reference versions <span class="badge">{{num_refs references}}</span></h3>
-    </div>
-    <div class="panel-body">
-      <p>
-        {{#each arrayify references}}
-        <span class="label label-warning">{{key}}</span>
+  <div class="side-panel-wrapper">
+    <div class="row">
+     <div class="col-md-6 col-sm-6 col-xs-6 compare-ref">
+      <li class="compare-dropdown">
+      <button type="button" class="btn btn-block btn-primary dropdown-toggle" data-toggle="dropdown"><span class="caret"></span> Ref: <span id="ref-version-text">{{refversion}}</span>
+       </button>
+       <ul class="dropdown-menu" role="menu">
+        {{#each refversions}}
+        <li><a href="#" class="js-click-ref-version"> {{this}} </a></li>   
         {{/each}}
-      </p>
-    </div>
+      </ul>
+    </li>
   </div>
+  <div class="col-md-6 col-sm-6 col-xs-6 compare-tar">
+    <li class="compare-dropdown">
+     <button type="button" class="btn btn-block btn-primary dropdown-toggle" data-toggle="dropdown"><span class="caret"></span> Tar: <span id="tar-version-text">{{tarversion}}</span>
+     </button>
+     <ul class="dropdown-menu" role="menu">
+      {{#each tarversions}}
+      <li><a href="#" class="js-click-tar-version"> {{this}} </a></li>
+      {{/each}}
+    </ul>
+  </li>
+</div>
+</div>
 
-  <div class="panel panel-warning">
-    <div class="panel-heading">
-      <h3>Tags <span class="badge">{{num_tags tags}}</span> </h3>
-    </div>
-    <div class="panel-body">
-      <p>
-        {{#each tags}}
-        <span class="label label-warning">{{this}}</span>
-        {{/each}}
-      </p>
-    </div>
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    <div class="huge">{{totaldocs}} Docs</div>
+    <div id="filtered_count">{{filtereddocs}} after filtering</div>
   </div>
+</div>
+<div class="panel panel-success">
+  <div class="panel-heading">
+    <h3> Document Name </h3>
+  </div>
+  <div class="panel-body">
+    <p>{{document_name}}</p>
+    <p>Avg page diff %: {{avg_diff_pct}}</p>
+    <p>Avg page num diff: {{avg_num_page_diff}}</p>
+    <p>Num pages: {{num_pages}} </p>
+  </div>
+</div>
 
-  {{/with}}
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <h3>Extension</h3>
+  </div>
+  <div class="panel-body">
+    <p>{{ext}}</p>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3>Path</h3>
+  </div>
+  <div class="panel-body">
+    <p>{{path}}</p>
+  </div>
+</div>
+
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    <h3>Reference versions <span class="badge">{{num_refs references}}</span></h3>
+  </div>
+  <div class="panel-body">
+    <p>
+      {{#each arrayify references}}
+      <span class="label label-warning">{{key}}</span>
+      {{/each}}
+    </p>
+  </div>
+</div>
+
+<div class="panel panel-warning">
+  <div class="panel-heading">
+    <h3>Tags <span class="badge">{{num_tags tags}}</span> </h3>
+  </div>
+  <div class="panel-body">
+    <p>
+      {{#each tags}}
+      <span class="label label-warning">{{this}}</span>
+      {{/each}}
+    </p>
+  </div>
+</div>
+</div>
+
+{{/with}}
 </template>
 
 <template name="documents">

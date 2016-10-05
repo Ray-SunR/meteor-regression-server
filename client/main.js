@@ -87,6 +87,8 @@ if (Meteor.isClient){
 	Session.set('sort_asc', true);
 	Session.set('filters', {});
 	Session.set('filtered_doc_count', 0);
+	Session.set('ref_versions', []);
+	Session.set('tar_versions', []);
 }
 
 Template.documents.onCreated(function bodyOnCreated() {
@@ -128,6 +130,21 @@ Template.registerHelper('', (obj) => {
 	return obj.length === 0;
 });
 
+Template.registerHelper('refversions', () => {
+	return Session.get('ref_versions');
+});
+
+Template.registerHelper('tarversions', () => {
+	return Session.get('tar_versions');
+});
+
+Template.registerHelper('refversion', () => {
+	return Session.get('ref_versions')[0];
+});
+
+Template.registerHelper('tarversion', () => {
+	return Session.get('tar_versions')[0];
+});
 
 function CreateFilter(filter){
 	let new_filter = FilterDefs()[filter.fname];
@@ -139,6 +156,25 @@ function CreateFilter(filter){
 	else {
 		return undefined;
 	}
+}
+
+function SetRefAndTarVersions(document){
+	let ref_versions = Session.get('ref_versions');
+	let tar_versions = Session.get('tar_versions');
+	if (!document || !document.references){
+		return;
+	}
+
+	ref_versions = _.union(ref_versions, Object.keys(document.references));
+
+	for (key in document.references){
+		tar_versions = _.union(tar_versions, Object.keys(document.references[key].diffs));
+	}
+
+	console.log(ref_versions);
+	console.log(tar_versions);
+	Session.set('ref_versions', ref_versions);
+	Session.set('tar_versions', tar_versions);	
 }
 
 Template.documents.helpers({
@@ -173,11 +209,14 @@ Template.documents.helpers({
 				});
 
 				if (flag){
+					SetRefAndTarVersions(document);
 					ret.push(document);
 				}
 			}
 			else{
-				ret.push(document.documentRefFirstPage());
+				document = document.documentRefFirstPage();
+				SetRefAndTarVersions(document);
+				ret.push(document);
 			}
 
 			Session.set('filtered_doc_count', ret.length);
@@ -233,6 +272,16 @@ Template.document.onRendered(function(){
 	this.$(".thumb-doc").hide(0).delay(500).fadeIn(1500);
 });
 
+Template.navigation.onRendered(function(){
+	$(".dropdown").hover(
+		function() {
+			$(this).find('.dropdown-menu').stop(true, true).delay(200).fadeIn();
+		}, 
+		function() {
+			$(this).find('.dropdown-menu').stop(true, true).delay(200).fadeOut();
+		});
+});
+
 Template.document.events({
 	'click .js-thumb-click'(event){
 		event.preventDefault();
@@ -262,8 +311,19 @@ Template.side_panel.helpers({
 	},
 });
 
+Template.side_panel.events({
+	'click .js-click-ref-version'(event){
+		event.preventDefault();
+		$('#ref-version-text').text(event.target.text);
+	},
+	'click .js-click-tar-version'(event){
+		event.preventDefault();
+		$('#tar-version-text').text(event.target.text);
+	}
+});
+
 Template.side_panel.onRendered(function(){
-	this.$(".panel-wrapper").hide(0).delay(500).fadeIn(3000);
+	//this.$(".panel-wrapper").hide(0).delay(500).fadeIn(3000);
 });
 
 function parseToken(item){
