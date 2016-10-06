@@ -308,17 +308,17 @@ Template.document.events({
 
 		let tar_key = Session.get('current_tar_version') + '-' + this.hash;
 		let ref_key = Session.get('current_ref_version') + '-' + this.hash;
-		console.log($('img[id=' + "'" + tar_key + "'" + ']'));
-		console.log($('img[id=' + "'" + ref_key + "'" + ']'));
-		$('img[id=' + "'" + tar_key + "'" + ']').removeClass('hidden');
-		$('img[id=' + "'" + ref_key + "'" + ']').addClass('hidden');
+		console.log($('img[id=' + "\"" + tar_key + "\"" + ']'));
+		console.log($('img[id=' + "\"" + ref_key + "\"" + ']'));
+		$('img[id=' + "\"" + tar_key + "\"" + ']').removeClass('hidden');
+		$('img[id=' + "\"" + ref_key + "\"" + ']').addClass('hidden');
 	},
 	'mouseleave .thumbnail-img'(event){
 		event.preventDefault();
 		let tar_key = Session.get('current_tar_version') + '-' + this.hash;
 		let ref_key = Session.get('current_ref_version') + '-' + this.hash;
-		$("img[id=" + "'" + tar_key + "'" + "]").addClass('hidden');
-		$("img[id=" + "'" + ref_key + "'" + "]").removeClass('hidden');
+		$("img[id=" + "\"" + tar_key + "\"" + "]").addClass('hidden');
+		$("img[id=" + "\"" + ref_key + "\"" + "]").removeClass('hidden');
 	}
 });
 
