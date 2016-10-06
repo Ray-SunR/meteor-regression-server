@@ -183,6 +183,11 @@
     z-index: 10;
 }
 
+.hidden{
+    display: none;
+    visibility: hidden;
+}
+
 footer {
     margin: 50px 0;
 }

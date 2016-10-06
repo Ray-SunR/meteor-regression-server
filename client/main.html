@@ -91,7 +91,7 @@
        </button>
        <ul class="dropdown-menu" role="menu">
         {{#each refversions}}
-        <li><a href="#" class="js-click-ref-version"> {{this}} </a></li>   
+        <li><a href="#" class="js-click-ref-version">{{this}}</a></li>   
         {{/each}}
       </ul>
     </li>
@@ -102,7 +102,7 @@
      </button>
      <ul class="dropdown-menu" role="menu">
       {{#each tarversions}}
-      <li><a href="#" class="js-click-tar-version"> {{this}} </a></li>
+      <li><a href="#" class="js-click-tar-version">{{this}}</a></li>
       {{/each}}
     </ul>
   </li>
@@ -193,7 +193,8 @@
     <div class="thumbnail">
       {{#if thumb_page_version}}
       <a class="thumbnail-link js-thumb-click" href="#">
-        <img class="img-responsive" src='/thumb?version={{thumb_page_version}}&hash={{thumb_page_hash}}' alt="">
+        <img class="img-responsive thumbnail-img" id="{{refversion}}-{{hash}}" src='/thumb?type=ref&version={{refversion}}&hash={{hash}}' alt="">
+        <img class="img-responsive thumbnail-img hidden" id="{{tarversion}}-{{hash}}" src='/thumb?type=tar&version={{tarversion}}&hash={{hash}}' alt="">
       </a>
       {{else}}
       <a class="thumbnail-link" href="#">

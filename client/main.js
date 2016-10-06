@@ -89,6 +89,8 @@ if (Meteor.isClient){
 	Session.set('filtered_doc_count', 0);
 	Session.set('ref_versions', []);
 	Session.set('tar_versions', []);
+	Session.set('current_ref_version', undefined);
+	Session.set('current_tar_version', undefined);
 }
 
 Template.documents.onCreated(function bodyOnCreated() {
@@ -139,11 +141,19 @@ Template.registerHelper('tarversions', () => {
 });
 
 Template.registerHelper('refversion', () => {
-	return Session.get('ref_versions')[0];
+	if (!Session.get('current_ref_version')) {
+		Session.set('current_ref_version', Session.get('ref_versions')[0]);
+	}
+
+	return Session.get('current_ref_version');
 });
 
 Template.registerHelper('tarversion', () => {
-	return Session.get('tar_versions')[0];
+	if (!Session.get('current_tar_version')) {
+		Session.set('current_tar_version', Session.get('tar_versions')[0]);
+	}
+
+	return Session.get('current_tar_version');
 });
 
 function CreateFilter(filter){
@@ -171,10 +181,10 @@ function SetRefAndTarVersions(document){
 		tar_versions = _.union(tar_versions, Object.keys(document.references[key].diffs));
 	}
 
-	console.log(ref_versions);
-	console.log(tar_versions);
 	Session.set('ref_versions', ref_versions);
-	Session.set('tar_versions', tar_versions);	
+	Session.set('tar_versions', tar_versions);
+	Session.set('current_ref_version', ref_versions[0]);
+	Session.set('current_tar_version', tar_versions[0]);
 }
 
 Template.documents.helpers({
@@ -292,6 +302,23 @@ Template.document.events({
 
 		$('#tokenfield-typeahead').tokenfield('createToken', 'tags?=' + event.target.text);
 		AddFilter('tags?=' + event.target.text);
+	},
+	'mouseenter .thumbnail-img'(event){
+		event.preventDefault();
+
+		let tar_key = Session.get('current_tar_version') + '-' + this.hash;
+		let ref_key = Session.get('current_ref_version') + '-' + this.hash;
+		console.log($('img[id=' + "'" + tar_key + "'" + ']'));
+		console.log($('img[id=' + "'" + ref_key + "'" + ']'));
+		$('img[id=' + "'" + tar_key + "'" + ']').removeClass('hidden');
+		$('img[id=' + "'" + ref_key + "'" + ']').addClass('hidden');
+	},
+	'mouseleave .thumbnail-img'(event){
+		event.preventDefault();
+		let tar_key = Session.get('current_tar_version') + '-' + this.hash;
+		let ref_key = Session.get('current_ref_version') + '-' + this.hash;
+		$("img[id=" + "'" + tar_key + "'" + "]").addClass('hidden');
+		$("img[id=" + "'" + ref_key + "'" + "]").removeClass('hidden');
 	}
 });
 
@@ -315,10 +342,12 @@ Template.side_panel.events({
 	'click .js-click-ref-version'(event){
 		event.preventDefault();
 		$('#ref-version-text').text(event.target.text);
+		Session.set('current_ref_version', event.target.text);
 	},
 	'click .js-click-tar-version'(event){
 		event.preventDefault();
 		$('#tar-version-text').text(event.target.text);
+		Session.set('current_tar_version', event.target.text);
 	}
 });
 

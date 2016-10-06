@@ -40,7 +40,6 @@ Collections['documents'].helpers({
 
 				if (1 in ref.pages){
 					this.thumb_page_version = ref.pages[1].version;
-					this.thumb_page_hash = ref.pages[1].hash;
 				}
 
 				// Calculate avg diff %
